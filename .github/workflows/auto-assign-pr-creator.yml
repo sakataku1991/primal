@@ -1,0 +1,39 @@
+name: Auto Assign PR Creator
+
+# ジョブの実行タイミング
+on:
+  pull_request:
+    # opened: PRが新たに作成された時
+    # edited: PRの内容が編集された時
+    # synchronize: PRにコミットが追加された時
+    # ready_for_review: PRがDraftからOpenに変更された時
+    types: [opened, ready_for_review]
+
+# このジョブの権限の設定
+permissions:
+  pull-requests: write
+  repository-projects: read
+
+jobs:
+  assign_creator:
+    name: Auto Assign PR Creator
+
+    # 以下の条件の両方に合致する場合にのみ、このジョブを実行する
+    # - PRの作成者がbot（Dependabotなど）ではない
+    # - Assigneesが設定されていない
+    if: ${{ github.actor != '[bot]' && github.event.pull_request.assignee == null }}
+
+    # Ubuntuの最新バージョンでこのジョブを実行する
+    runs-on: ubuntu-latest
+
+    # 何らかのエラーによりジョブが完了しないケースに備えてタイムアウトを設定している
+    # ※デフォルトの最大実行時間は360分（6時間）とのこと
+    # DOC: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idtimeout-minutes
+    timeout-minutes: 5
+
+    # PRの作成者自身がそのPRのAssigneesとして自動的に設定されるようにする
+    steps:
+      - name: Assign PR Creator
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr edit ${{ github.event.number }} --add-assignee ${{ github.actor }}
