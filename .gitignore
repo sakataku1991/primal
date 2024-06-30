@@ -1,0 +1,5 @@
+# 環境変数
+/.env
+
+# macOSの.DS_Storeファイル
+/.DS_Store
