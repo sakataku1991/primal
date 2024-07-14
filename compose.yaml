@@ -1,0 +1,28 @@
+services:
+  db:
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:?.envファイルの内容を確認してください}"
+      - "MYSQL_USER=${DB_USER:?.envファイルの内容を確認してください}"
+      - "MYSQL_PASSWORD=${DB_PASSWORD:?.envファイルの内容を確認してください}"
+      - "MYSQL_DATABASE=${DB_DATABASE:?.envファイルの内容を確認してください}"
+      - "TZ=${DB_TZ:-Asia/Tokyo}"
+    ports:
+    volumes:
+    image: mysql:8.0.37
+
+  api:
+    ports:
+    volumes:
+    build:
+
+  front_admin:
+    ports:
+    volumes:
+    build:
+
+  front_user:
+    ports:
+    volumes:
+    build:
+
+volumes:
