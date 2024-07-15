@@ -54,5 +54,21 @@ services:
     depends_on:
       - api
 
+  # front_user:
+  #   ports:
+  #     - "${FRONT_ADMIN_HOST_MACHINE_PORT:-8001}:8001"
+  #   volumes:
+  #     - type: bind
+  #       source: ./frontend/user
+  #       target: /user
+  #   build:
+  #     context: ./frontend/user
+  #     dockerfile: ./docker/Dockerfile
+  #     args:
+  #       - "LANG=${LANG:-C.UTF-8}"
+  #       - "TZ=${TZ:-Asia/Tokyo}"
+  #   depends_on:
+  #     - front_admin
+
 volumes:
   primal-db-volume:
