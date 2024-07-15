@@ -27,17 +27,48 @@ services:
     stdin_open: true
     volumes:
       - type: bind
-        source: ./backend/src
-        target: /app
+        source: ./backend
+        target: /backend
     build:
       context: ./backend
       dockerfile: ./docker/Dockerfile
       args:
-        - "WORKDIR=${WORKDIR:-src}"
         - "LANG=${LANG:-C.UTF-8}"
         - "TZ=${TZ:-Asia/Tokyo}"
     depends_on:
       - db
+
+  front_admin:
+    ports:
+      - "${FRONT_ADMIN_HOST_MACHINE_PORT:-8000}:8000"
+    volumes:
+      - type: bind
+        source: ./frontend/admin
+        target: /admin
+    build:
+      context: ./frontend/admin
+      dockerfile: ./docker/Dockerfile
+      args:
+        - "LANG=${LANG:-C.UTF-8}"
+        - "TZ=${TZ:-Asia/Tokyo}"
+    depends_on:
+      - api
+
+  # front_user:
+  #   ports:
+  #     - "${FRONT_ADMIN_HOST_MACHINE_PORT:-8001}:8001"
+  #   volumes:
+  #     - type: bind
+  #       source: ./frontend/user
+  #       target: /user
+  #   build:
+  #     context: ./frontend/user
+  #     dockerfile: ./docker/Dockerfile
+  #     args:
+  #       - "LANG=${LANG:-C.UTF-8}"
+  #       - "TZ=${TZ:-Asia/Tokyo}"
+  #   depends_on:
+  #     - front_admin
 
 volumes:
   primal-db-volume:
