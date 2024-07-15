@@ -1,0 +1,43 @@
+services:
+  db:
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:?.envファイルの内容を確認してください}"
+      - "MYSQL_USER=${DB_USER:?.envファイルの内容を確認してください}"
+      - "MYSQL_PASSWORD=${DB_PASSWORD:?.envファイルの内容を確認してください}"
+      - "MYSQL_DATABASE=${DB_DATABASE:?.envファイルの内容を確認してください}"
+      - "TZ=${TZ:-Asia/Tokyo}"
+    ports:
+      - "${DB_HOST_MACHINE_PORT:-3306}:3306"
+    volumes:
+      - type: volume
+        source: primal-db-volume
+        target: /var/lib/mysql
+    image: mysql:8.0.37
+
+  api:
+    environment:
+      - "MYSQL_USER=${DB_USER:?.envファイルの内容を確認してください}"
+      - "MYSQL_PASSWORD=${DB_PASSWORD:?.envファイルの内容を確認してください}"
+      - "MYSQL_DATABASE=${DB_DATABASE:?.envファイルの内容を確認してください}"
+      - "MYSQL_HOST=${DB_HOST:?.envファイルの内容を確認してください}"
+    ports:
+      - "${API_HOST_MACHINE_PORT:-3000}:3000"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    tty: true
+    stdin_open: true
+    volumes:
+      - type: bind
+        source: ./backend/src
+        target: /app
+    build:
+      context: ./backend
+      dockerfile: ./docker/Dockerfile
+      args:
+        - "WORKDIR=${WORKDIR:-src}"
+        - "LANG=${LANG:-C.UTF-8}"
+        - "TZ=${TZ:-Asia/Tokyo}"
+    depends_on:
+      - db
+
+volumes:
+  primal-db-volume:
