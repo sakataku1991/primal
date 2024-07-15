@@ -5,50 +5,36 @@ services:
       - "MYSQL_USER=${DB_USER:?.envファイルの内容を確認してください}"
       - "MYSQL_PASSWORD=${DB_PASSWORD:?.envファイルの内容を確認してください}"
       - "MYSQL_DATABASE=${DB_DATABASE:?.envファイルの内容を確認してください}"
-      - "TZ=${DB_TZ:-Asia/Tokyo}"
+      - "TZ=${TZ:-Asia/Tokyo}"
     ports:
       - "${DB_HOST_MACHINE_PORT:-3306}:3306"
     volumes:
       - type: volume
         source: primal-db-volume
         target: /var/lib/mysql
-      - type: bind
-        source: ./docker/db/init
-        target: /docker-entrypoint-initdb.d
     image: mysql:8.0.37
 
   api:
+    environment:
+      RAILS_ENV: "development"
     ports:
       - "${API_HOST_MACHINE_PORT:-3000}:3000"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    tty: true
+    stdin_open: true
     volumes:
       - type: bind
         source: ./backend/src
         target: /app
-    build: ./backend/docker
+    build:
+      context: ./backend
+      dockerfile: ./docker/Dockerfile
+      args:
+        - "WORKDIR=${WORKDIR:-src}"
+        - "LANG=${LANG:-C.UTF-8}"
+        - "TZ=${TZ:-Asia/Tokyo}"
     depends_on:
       - db
-
-  front_admin:
-    ports:
-      - "${FRONT_ADMIN_HOST_MACHINE_PORT:-8000}:8000"
-    volumes:
-      - type: bind
-        source: ./frontend/admin/src
-        target: /app
-    build: ./frontend/admin/docker
-    depends_on:
-      - api
-
-  front_user:
-    ports:
-      - "${FRONT_USER_HOST_MACHINE_PORT:-8001}:8001"
-    volumes:
-      - type: bind
-        source: ./frontend/user/src
-        target: /app
-    build: ./frontend/user/docker
-    depends_on:
-      - front_admin
 
 volumes:
   primal-db-volume:
