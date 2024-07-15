@@ -27,13 +27,12 @@ services:
     stdin_open: true
     volumes:
       - type: bind
-        source: ./backend/src
-        target: /app
+        source: ./backend
+        target: /backend
     build:
       context: ./backend
       dockerfile: ./docker/Dockerfile
       args:
-        - "WORKDIR=${WORKDIR:-src}"
         - "LANG=${LANG:-C.UTF-8}"
         - "TZ=${TZ:-Asia/Tokyo}"
     depends_on:
