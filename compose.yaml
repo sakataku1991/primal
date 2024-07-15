@@ -38,5 +38,21 @@ services:
     depends_on:
       - db
 
+  front_admin:
+    ports:
+      - "${FRONT_ADMIN_HOST_MACHINE_PORT:-8000}:8000"
+    volumes:
+      - type: bind
+        source: ./frontend/admin
+        target: /admin
+    build:
+      context: ./frontend/admin
+      dockerfile: ./docker/Dockerfile
+      args:
+        - "LANG=${LANG:-C.UTF-8}"
+        - "TZ=${TZ:-Asia/Tokyo}"
+    depends_on:
+      - api
+
 volumes:
   primal-db-volume:
