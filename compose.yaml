@@ -16,7 +16,10 @@ services:
 
   api:
     environment:
-      RAILS_ENV: "development"
+      - "MYSQL_USER=${DB_USER:?.envファイルの内容を確認してください}"
+      - "MYSQL_PASSWORD=${DB_PASSWORD:?.envファイルの内容を確認してください}"
+      - "MYSQL_DATABASE=${DB_DATABASE:?.envファイルの内容を確認してください}"
+      - "MYSQL_HOST=${DB_HOST:?.envファイルの内容を確認してください}"
     ports:
       - "${API_HOST_MACHINE_PORT:-3000}:3000"
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
