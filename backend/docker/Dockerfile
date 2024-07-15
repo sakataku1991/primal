@@ -4,9 +4,9 @@ ARG WORKDIR
 ARG LANG
 ARG TZ
 
-ENV ROOT=/${WORKDIR}
-ENV LANG=/${LANG}
-ENV TZ=/${TZ}
+ENV ROOT=${WORKDIR}
+ENV LANG=${LANG}
+ENV TZ=${TZ}
 
 RUN apt-get update -qq && \
     apt-get install -y \
